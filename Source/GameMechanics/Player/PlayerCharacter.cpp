@@ -5,9 +5,9 @@
 #include "Camera/CameraComponent.h"
 
 // Need the full location for some reason
-#include "G:\Epic Games\UE_5.5\Engine\Plugins\EnhancedInput\Source\EnhancedInput\Public\InputMappingContext.h"
-#include "G:\Epic Games\UE_5.5\Engine\Plugins\EnhancedInput\Source\EnhancedInput\Public\EnhancedInputSubsystems.h"
-#include "G:\Epic Games\UE_5.5\Engine\Plugins\EnhancedInput\Source\EnhancedInput\Public\EnhancedInputComponent.h"
+#include "EnhancedInput\Public\InputMappingContext.h"
+#include "EnhancedInput\Public\EnhancedInputSubsystems.h"
+#include "EnhancedInput\Public\EnhancedInputComponent.h"
 
 
 
@@ -44,6 +44,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 
+
 	// Setup input mapping context
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 
@@ -56,6 +57,16 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	Input->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Shoot);
 
+
+	// Move
+	Input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
+
+	// Look
+	Input->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+
+	// Jump
+	Input->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+	
 
 
 	/*
@@ -70,6 +81,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	}
 	*/
 
+
+	// Old input system:
+	/*
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
@@ -77,6 +91,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAxis("TurnCamera", this, &APlayerCharacter::Turn);
 	PlayerInputComponent->BindAxis("PitchCamera", this, &APlayerCharacter::Pitch);
+	*/
 }
 
 void APlayerCharacter::Shoot(const FInputActionValue& Value)
@@ -89,6 +104,41 @@ void APlayerCharacter::Shoot(const FInputActionValue& Value)
 	FVector VectorVAlue = Value.Get<FVector>();
 
 	// Use the values down here !
+}
+
+void APlayerCharacter::Move(const FInputActionValue& InputVector2D)
+{
+	// Moving with input
+
+	FVector2D InputVector = InputVector2D.Get<FVector2D>();
+
+	if (IsValid(Controller))
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// Add Movement Input
+		// Depending on if WASD pressed, it will move forwards and rightwards
+		AddMovementInput(ForwardDirection, InputVector.Y);
+		AddMovementInput(RightDirection, InputVector.X);
+
+	}
+
+}
+
+void APlayerCharacter::Look(const FInputActionValue& InputVector2D)
+{
+	FVector2D InputVector = InputVector2D.Get<FVector2D>();
+
+	if (IsValid(Controller))
+	{
+		// Camera Movement
+		AddControllerYawInput(InputVector.X);
+		AddControllerPitchInput(InputVector.Y);
+	}
 }
 
 void APlayerCharacter::MoveForward(float InputValue)

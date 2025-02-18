@@ -34,12 +34,29 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
 	class UInputMappingContext* InputMapping;
 
+	// Example Input
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UInputAction* ShootAction;
 
 	UFUNCTION()
 	void Shoot(const FInputActionValue& Value);
+
+
+	// Actual Input
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UInputAction* IA_Jump;
+	//void Jump(const FInputActionValue& Input);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UInputAction* IA_Move;
+	void Move(const FInputActionValue& InputVector2D);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UInputAction* IA_Look;
+	void Look(const FInputActionValue& InputVector2D);
+
 	
+	//void Jump(const FInputActionValue& Value);
 
 
 	// Old input system
