@@ -44,6 +44,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 
+#pragma region Advanced Input System
 
 	// Setup input mapping context
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -58,6 +59,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Input->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Shoot);
 
 
+	// Attaching a function to input
 	// Move
 	Input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 
@@ -66,23 +68,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	// Jump
 	Input->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-	
+
+#pragma endregion
 
 
-	/*
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		// Get local player subsystem
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			// Add Input context
-			Subsystem->AddMappingContext(InputMapping, 0);
-		}
-	}
-	*/
+#pragma region Old Input System
 
-
-	// Old input system:
 	/*
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 
@@ -92,19 +83,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("TurnCamera", this, &APlayerCharacter::Turn);
 	PlayerInputComponent->BindAxis("PitchCamera", this, &APlayerCharacter::Pitch);
 	*/
+
+#pragma endregion
 }
 
-void APlayerCharacter::Shoot(const FInputActionValue& Value)
-{
-	// You can get action values like this:
 
-	bool BoolValue = Value.Get<bool>();
-	float FloatValue = Value.Get<float>();
-	FVector2D Axis2DValue = Value.Get<FVector2D>();
-	FVector VectorVAlue = Value.Get<FVector>();
-
-	// Use the values down here !
-}
+#pragma region Advanced Input System
 
 void APlayerCharacter::Move(const FInputActionValue& InputVector2D)
 {
@@ -141,6 +125,23 @@ void APlayerCharacter::Look(const FInputActionValue& InputVector2D)
 	}
 }
 
+#pragma endregion
+
+
+#pragma region Old Input System
+
+void APlayerCharacter::Shoot(const FInputActionValue& Value)
+{
+	// You can get action values like this:
+
+	bool BoolValue = Value.Get<bool>();
+	float FloatValue = Value.Get<float>();
+	FVector2D Axis2DValue = Value.Get<FVector2D>();
+	FVector VectorVAlue = Value.Get<FVector>();
+
+	// Use the values down here !
+}
+
 void APlayerCharacter::MoveForward(float InputValue)
 {
 	FVector ForwardDirection = GetActorForwardVector();
@@ -162,3 +163,5 @@ void APlayerCharacter::Pitch(float InputValue)
 {
 	AddControllerPitchInput(InputValue);
 }
+
+#pragma endregion

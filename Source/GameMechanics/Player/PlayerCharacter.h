@@ -27,12 +27,17 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	// Adding components to character, is initialized in the constructor
+	// Camera variable, it is initialized in the constructor
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* Camera;
 
-	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
+	// Input Mapping Context variable
+	UPROPERTY(EditAnywhere, Category = "EnhancedInput") // Category is used for sorting variables in the blueprint
 	class UInputMappingContext* InputMapping;
+
+
+
+#pragma region Example Input
 
 	// Example Input
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -41,23 +46,30 @@ protected:
 	UFUNCTION()
 	void Shoot(const FInputActionValue& Value);
 
+	#pragma endregion
+
+
+
+#pragma region Initialize InputActions
 
 	// Actual Input
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EnhancedInput")
 	class UInputAction* IA_Jump;
 	//void Jump(const FInputActionValue& Input);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EnhancedInput")
 	class UInputAction* IA_Move;
 	void Move(const FInputActionValue& InputVector2D);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EnhancedInput")
 	class UInputAction* IA_Look;
 	void Look(const FInputActionValue& InputVector2D);
 
-	
-	//void Jump(const FInputActionValue& Value);
+#pragma endregion
 
+
+
+#pragma region Old Input System
 
 	// Old input system
 	void MoveForward(float InputValue); 
@@ -65,4 +77,6 @@ protected:
 
 	void Turn(float InputValue);
 	void Pitch(float InputValue);
+
+#pragma endregion
 };
