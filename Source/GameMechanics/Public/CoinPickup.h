@@ -24,13 +24,12 @@ public:
 	FOnCoinPickupDelegate OnCoinPickup;
 
 	//UFUNCTION()
-	void OnBeginOverlapComponentEvent(UPrimitiveComponent* OverlappedComponent, 
-		AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, 
-		bool bFromSweep, const FHitResult& SweepResult);
+	void OnBeginOverlapComponentEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
 	// Called when the game starts or when spawned
-	UPROPERTY(EditAnywhere, Category="Coin Pickup")
+	UPROPERTY(EditAnywhere, Category = "Coin Pickup")
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Coin Pickup")

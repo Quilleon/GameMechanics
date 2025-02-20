@@ -1,13 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GameMechanics/Player/PlayerCharacter.h"
-#include "Camera/CameraComponent.h"
+#include "GameMechanics/Player/PlayerCharacter.h" // Why is can this .cpp access protected variables from here, but not from InputDataConfig.h ?
+#include "Camera/CameraComponent.h" // to access camera component
 
-// Need the full location for some reason
+// Need the more specified location
 #include "EnhancedInput\Public\InputMappingContext.h"
 #include "EnhancedInput\Public\EnhancedInputSubsystems.h"
 #include "EnhancedInput\Public\EnhancedInputComponent.h"
+
+#include "GameMechanics\DataAssets\InputDataConfig.h" // Include the data asset .h
 
 
 
@@ -17,7 +19,7 @@ APlayerCharacter::APlayerCharacter() // The constructor
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
@@ -56,18 +58,23 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	Input->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Shoot);
 
 
-	// Attaching a function to input
-	// Move
-	Input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
+	if (!InputActions) return; // Don't read input if InputActions are invalid
 
-	// Look
-	Input->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+	
+	//Input->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Shoot);
 
-	// Jump
-	Input->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+
+	// Attaching a function to an InputAction
+	
+	
+	// BindAction(IA, How the IA is interacted with, Which object should do the function, The activated function)
+	Input->BindAction(InputActions->IA_Move, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);  // Move
+	
+	Input->BindAction(InputActions->IA_Look, ETriggerEvent::Triggered, this, &APlayerCharacter::Look); // Look
+	
+	Input->BindAction(InputActions->IA_Jump, ETriggerEvent::Triggered, this, &APlayerCharacter::Jump); // Jump
 
 #pragma endregion
 
@@ -123,6 +130,11 @@ void APlayerCharacter::Look(const FInputActionValue& InputVector2D)
 		AddControllerYawInput(InputVector.X);
 		AddControllerPitchInput(InputVector.Y);
 	}
+}
+
+void APlayerCharacter::Jump()
+{
+	ACharacter::Jump();
 }
 
 #pragma endregion

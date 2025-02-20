@@ -18,13 +18,17 @@ class GAMEMECHANICS_API UInputDataConfig : public UDataAsset
 	
 public:
 	// Remember to write class in front of UInputAction
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UInputAction* Move;
+	class UInputAction* IA_Move;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UInputAction* Look;
+	class UInputAction* IA_Look;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UInputAction* IA_Jump;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UInputAction* Shoot;
+	class UInputAction* IA_Shoot;
 	
 }; 
