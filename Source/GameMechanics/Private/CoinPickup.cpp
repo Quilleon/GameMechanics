@@ -25,7 +25,7 @@ ACoinPickup::ACoinPickup()
 
 	// When an overlap event happens for ColliderComponent, "this" executes "&ACoinPickup::OnBeginOverlapComponentEvent"
 	ColliderComponent->OnComponentBeginOverlap.AddDynamic(this, &ACoinPickup::OnBeginOverlapComponentEvent);
-
+	//ColliderComponent->OnComponentBeginOverlap.(&ACoinPickup::OnBeginOverlapComponentEvent);
 
 	//Creates and assigns MeshComponent, but does not attach
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
@@ -42,6 +42,8 @@ ACoinPickup::ACoinPickup()
 void ACoinPickup::OnBeginOverlapComponentEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlapped"));
+	
 	Destroy();
 	// If Actor is not a character
 	if (!Cast<ACharacter>(OtherActor)) return;

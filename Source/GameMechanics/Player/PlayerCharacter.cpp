@@ -68,7 +68,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	// Attaching a function to an InputAction
 	
-	
 	// BindAction(IA, How the IA is interacted with, Which object should do the function, The activated function)
 	Input->BindAction(InputActions->IA_Move, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);  // Move
 	

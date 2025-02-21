@@ -23,7 +23,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Coin Pickup")
 	FOnCoinPickupDelegate OnCoinPickup;
 
-	//UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OnBeginOverlapComponentEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
