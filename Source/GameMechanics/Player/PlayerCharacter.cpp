@@ -3,6 +3,7 @@
 
 #include "GameMechanics/Player/PlayerCharacter.h" // Why is can this .cpp access protected variables from here, but not from InputDataConfig.h ?
 #include "Camera/CameraComponent.h" // to access camera component
+#include "Components/SphereComponent.h" // To access and utilize sphere component
 
 // Need the more specified location
 #include "EnhancedInput\Public\InputMappingContext.h"
@@ -19,9 +20,11 @@ APlayerCharacter::APlayerCharacter() // The constructor
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	CameraPivot = CreateDefaultSubobject<USphereComponent>("CameraPivot");
 	
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
-	Camera->SetupAttachment(RootComponent);
+	Camera->SetupAttachment(RootComponent); // CameraPivot
 	Camera->bUsePawnControlRotation = true;
 	//Camera->bConstrainAspectRatio = true;
 }
@@ -129,6 +132,8 @@ void APlayerCharacter::Look(const FInputActionValue& InputVector2D)
 		AddControllerYawInput(InputVector.X);
 		AddControllerPitchInput(InputVector.Y);
 	}
+
+
 }
 
 void APlayerCharacter::Jump()

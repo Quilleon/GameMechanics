@@ -44,7 +44,6 @@ void ACoinPickup::OnBeginOverlapComponentEvent(UPrimitiveComponent* OverlappedCo
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlapped"));
 	
-	Destroy();
 	// If Actor is not a character
 	if (!Cast<ACharacter>(OtherActor)) return;
 

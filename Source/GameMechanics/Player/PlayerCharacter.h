@@ -7,7 +7,7 @@
 //#include "GameMechanics\DataAssets\InputDataConfig.h" // Input Action data asset
 #include "PlayerCharacter.generated.h"
 
-
+class USphereComponent;
 
 
 UCLASS()
@@ -38,9 +38,14 @@ public:
 	
 
 protected:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USphereComponent> CameraPivot;
+
 	// Camera variable, it is initialized in the constructor
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* Camera;
+
+
 
 	// Input Mapping Context variable
 	UPROPERTY(EditAnywhere, Category = "EnhancedInput") // Category is used for sorting variables in the blueprint
