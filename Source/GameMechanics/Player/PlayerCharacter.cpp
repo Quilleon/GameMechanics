@@ -14,7 +14,7 @@
 #include "EnhancedInput\Public\EnhancedInputComponent.h"
 
 #include "GameMechanics\DataAssets\InputDataConfig.h" // Include the data asset .h
-#include "Kismet/KismetMathLibrary.inl"
+//#include "Kismet/KismetMathLibrary.inl" // This caused build errors
 
 
 // Sets default values
@@ -178,7 +178,7 @@ void APlayerCharacter::Interact()
 
 	TArray<AActor*> InteractableActors;
 	
-	AActor* closestActor;
+	AActor* closestActor = nullptr;
 
 	for (auto OverlappingActor : OverlappingActors)
 	{

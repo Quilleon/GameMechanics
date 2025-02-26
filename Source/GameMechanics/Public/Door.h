@@ -33,7 +33,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Interact interface
-	//virtual void Interact() override;
+	virtual void Interact() override;
 
 private:
 	bool opening = false;
