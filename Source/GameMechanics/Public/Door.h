@@ -38,7 +38,7 @@ public:
 private:
 	bool opening = false;
 	bool prevOpeningState;
-	float openingTimer;
+	float openingTimer = 0;
 	UPROPERTY(EditAnywhere, Category = "DoorAction") float openingTime;
 	UPROPERTY(EditAnywhere, Category = "DoorAction") FRotator openAngle;
 	UPROPERTY(EditAnywhere, Category = "DoorAction") FRotator closedAngle;

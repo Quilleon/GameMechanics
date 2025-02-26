@@ -169,7 +169,7 @@ void APlayerCharacter::Jump()
 
 void APlayerCharacter::Interact()
 {
-	//printf("Interacted");
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, TEXT("Interact Action"));
 
 
 	

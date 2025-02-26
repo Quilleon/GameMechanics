@@ -22,9 +22,11 @@ ADoor::ADoor()
 
 	DoorPivot = CreateDefaultSubobject<USphereComponent>("DoorPivot");
 	DoorPivot->SetupAttachment(SphereCollider);
+	DoorPivot->SetGenerateOverlapEvents(false);
 
 	Door = CreateDefaultSubobject<UStaticMeshComponent>("Door");
 	Door->SetupAttachment(DoorPivot);
+	Door->SetGenerateOverlapEvents(false);
 
 }
 
@@ -46,8 +48,16 @@ void ADoor::Tick(float DeltaTime)
 	// If it has been activated this frame (activating the if statement when openingTimer is at the extremes) or when openingTimer is between the values
 	if (doorActivated || (0 < openingTimer && openingTimer < openingTime)) 
 	{
-		openingTimer += DeltaTime * opening ? 1 : -1;
-		openingTimer = FMath::Clamp(openingTimer, 0, openingTime);
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, opening ? TEXT("Opening!") : TEXT("Closing!"));
+
+		//if (doorActivated)openingTimer = 0;
+
+		openingTimer += (float)(FApp::GetDeltaTime() * (opening ? 1 : -1));
+
+		FString debug = FString::SanitizeFloat((double)openingTimer);
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, debug);
+
+		//openingTimer = FMath::Clamp(openingTimer, 0, openingTime);
 
 		// Lerp doorAngle with openingTimer
 		//currentAngle = FMath::Lerp(openAngle, closedAngle, openingTimer / openingTime);
@@ -61,9 +71,10 @@ void ADoor::Tick(float DeltaTime)
 		//AnimationCore::QuatFromEuler()FQuat::Euler(0, 0, 0);
 		//FRotator newRotation = FQuat::Slerp(rot1, rot1, openingTimer / openingTime);
 
-		float alpha = openingTimer / openingTime;
+		float alpha = FMath::Clamp(openingTimer / openingTime, 0, 1);
 		FRotator newRotation = FMath::Lerp(closedAngle, openAngle, alpha);
-		//DoorHinge->SetRelativeRotation(newRotation);
+		// TODO: Can set angular velocity to enable good looking phsycis collisions
+		DoorPivot->SetRelativeRotation(newRotation); 
 	}
 	
 	prevOpeningState = opening;
@@ -73,6 +84,8 @@ void ADoor::Tick(float DeltaTime)
 void ADoor::Interact()
 {
 	opening = !opening;
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, opening ? TEXT("Open door") : TEXT("Close door"));
 
 	//return opening;
 }
