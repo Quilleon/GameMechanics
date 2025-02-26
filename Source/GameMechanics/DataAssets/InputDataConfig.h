@@ -29,6 +29,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UInputAction* IA_Jump;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UInputAction* IA_Interact;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UInputAction* IA_Sneak;

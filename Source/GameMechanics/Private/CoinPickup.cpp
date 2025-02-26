@@ -33,23 +33,22 @@ ACoinPickup::ACoinPickup()
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// Avoid checking for unnecessary calls
-	// These are also changes in variables (for the MeshComponent) in the blurprint. (Not necessary to be done in code)
+	// These are also changes in variables (for the MeshComponent) in the blueprint. (Not necessary to be done in code)
 	MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	MeshComponent->SetGenerateOverlapEvents(false);
 }
 
-// This is not being called
+
 void ACoinPickup::OnBeginOverlapComponentEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlapped"));
 	
 	// If Actor is not a character
-	if (!Cast<ACharacter>(OtherActor)) return;
+	if (!Cast<ACharacter>(OtherActor)) return; // TODO: This should be done in PlayerCharacter to only activate when they overlap
+	
 
-	// Check is it is bound, and broadcast coin has been picked up
-
-	if (OnCoinPickup.IsBound())
+	if (OnCoinPickup.IsBound()) // Check if it is bound, and broadcast coin has been picked up
 	{
 		OnCoinPickup.Broadcast();
 	}

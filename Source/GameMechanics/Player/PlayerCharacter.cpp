@@ -6,12 +6,15 @@
 #include "Components/SphereComponent.h" // To access and utilize sphere component
 
 // Need the more specified location
+#include "InteractInterface.h"
+#include "ViewportInteractableInterface.h"
+#include "Components/CapsuleComponent.h"
 #include "EnhancedInput\Public\InputMappingContext.h"
 #include "EnhancedInput\Public\EnhancedInputSubsystems.h"
 #include "EnhancedInput\Public\EnhancedInputComponent.h"
 
 #include "GameMechanics\DataAssets\InputDataConfig.h" // Include the data asset .h
-
+#include "Kismet/KismetMathLibrary.inl"
 
 
 // Sets default values
@@ -21,19 +24,24 @@ APlayerCharacter::APlayerCharacter() // The constructor
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Use this for turning the camera around the player
 	CameraPivot = CreateDefaultSubobject<USphereComponent>("CameraPivot");
 	
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
-	Camera->SetupAttachment(RootComponent); // CameraPivot
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
+	Camera->SetupAttachment(RootComponent); //CameraPivot
 	Camera->bUsePawnControlRotation = true;
 	//Camera->bConstrainAspectRatio = true;
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnBeginOverlapComponentEvent);
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	CapsuleCollider = GetCapsuleComponent();
+
 }
 
 // Called every frame
@@ -78,6 +86,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	
 	Input->BindAction(InputActions->IA_Jump, ETriggerEvent::Triggered, this, &APlayerCharacter::Jump); // Jump
 
+	Input->BindAction(InputActions->IA_Interact, ETriggerEvent::Triggered, this, &APlayerCharacter::Interact); // Interact
+
 #pragma endregion
 
 
@@ -96,17 +106,29 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 #pragma endregion
 }
 
+void APlayerCharacter::OnBeginOverlapComponentEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlapped with " + OtherActor->GetActorNameOrLabel()));
+
+	if (!Cast<IInteractInterface>(OtherActor)) return;
+
+	//OtherActor->Destroy();
+}
+
 
 #pragma region Advanced Input System
 
 void APlayerCharacter::Move(const FInputActionValue& InputVector2D)
 {
+	printf("Move Called");
+
 	// Moving with input
 
 	FVector2D InputVector = InputVector2D.Get<FVector2D>();
 
 	if (IsValid(Controller))
 	{
+		printf("Moving");
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
@@ -128,6 +150,8 @@ void APlayerCharacter::Look(const FInputActionValue& InputVector2D)
 
 	if (IsValid(Controller))
 	{
+		printf("Looking");
+
 		// Camera Movement
 		AddControllerYawInput(InputVector.X);
 		AddControllerPitchInput(InputVector.Y);
@@ -138,7 +162,67 @@ void APlayerCharacter::Look(const FInputActionValue& InputVector2D)
 
 void APlayerCharacter::Jump()
 {
+	printf("Jumping");
+
 	ACharacter::Jump();
+}
+
+void APlayerCharacter::Interact()
+{
+	//printf("Interacted");
+
+
+	
+	TArray<AActor*> OverlappingActors;
+	CapsuleCollider->GetOverlappingActors(OverlappingActors);
+
+	TArray<AActor*> InteractableActors;
+	
+	AActor* closestActor;
+
+	for (auto OverlappingActor : OverlappingActors)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Detected"));
+
+		if (!Cast<IInteractInterface>(OverlappingActor)) return;
+
+		//InteractableActors.Add(OverlappingActor);
+		if (!closestActor)
+			closestActor = OverlappingActor;
+		else if (GetDistanceBetweenTwoActors(closestActor, this) > GetDistanceBetweenTwoActors(OverlappingActor, this))
+		{
+			closestActor = OverlappingActor;
+		}
+	}
+
+	if (!closestActor) return;
+
+	IInteractInterface* interactInterface = Cast<IInteractInterface>(closestActor);
+	interactInterface->Interact();
+	
+
+	//closestActor->GetNativeInterfaceAddress(IInteractInterface )
+	//UE_LOG(LogTemp, Log, TEXT("%s : %s"), *closestActor->GetName(), *IInteractInterface::Execute_InteractInterface(Cast<IInteractInterface>(closestActor)));
+	
+	
+
+	//AActor actor;
+	//std::string RandomActorName = actor.GetActorNameOrLabel();
+	//std::string OverlappingActorName = OverlappingActors[0]->GetActorNameOrLabel();
+	
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interacted"));
+
+
+	//bool bIsImplemented;
+
+	/* bIsImplemented is true if OriginalObject implements UReactToTriggerInterface */
+	//bIsImplemented = OriginalObject->GetClass()->ImplementsInterface(UReactToTriggerInterface::StaticClass());
+
+	/* bIsImplemented is true if OriginalObject implements UReactToTriggerInterface */
+	//bIsImplemented = OriginalObject->Implements<UReactToTriggerInterface>();
+
+	/* ReactingObject is non-null if OriginalObject implements UReactToTriggerInterface in C++ */
+	//IReactToTriggerInterface* ReactingObject = Cast<IReactToTriggerInterface>(OriginalObject);
 }
 
 #pragma endregion
@@ -180,4 +264,25 @@ void APlayerCharacter::Pitch(float InputValue)
 	AddControllerPitchInput(InputValue);
 }
 
+
 #pragma endregion
+
+
+float APlayerCharacter::MagnitudeOfVector3d(FVector3d vector)
+{
+	double x2 = vector.X * vector.X; //FMath::Square(vector.X);
+	double y2 = vector.Y * vector.Y; //FMath::Square(vector.Y);
+	double z2 = vector.Z * vector.Z; //FMath::Square(vector.Z);
+
+	return FMath::Sqrt(x2 + y2 + z2);
+}
+
+float APlayerCharacter::GetDistanceBetweenTwoActors(AActor* actor1, AActor* actor2)
+{
+	FVector3d pos1 = actor1->GetTransform().GetLocation();
+	FVector3d pos2 = actor2->GetTransform().GetLocation();
+
+	return MagnitudeOfVector3d(pos2 - pos1);
+}
+
+

@@ -7,7 +7,9 @@
 //#include "GameMechanics\DataAssets\InputDataConfig.h" // Input Action data asset
 #include "PlayerCharacter.generated.h"
 
+struct FInputActionValue;
 class USphereComponent;
+class UCapsuleComponent;
 
 
 UCLASS()
@@ -35,11 +37,17 @@ public:
 
 	 //UInputDataConfig; // creating the class, I need to do this for all unreal classes? They are not built in??
 
+	UFUNCTION(BlueprintCallable)
+	void OnBeginOverlapComponentEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> CameraPivot;
+
+	TObjectPtr<UCapsuleComponent> CapsuleCollider;
 
 	// Camera variable, it is initialized in the constructor
 	UPROPERTY(EditAnywhere)
@@ -55,10 +63,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
 	class UInputDataConfig* InputActions; // Data Asset containing input actions
 
+	// Input functions
 	void Move(const FInputActionValue& InputVector2D);
 	void Look(const FInputActionValue& InputVector2D);
 	void Jump();
-
+	void Interact();
 
 
 #pragma region Example Input
@@ -105,4 +114,7 @@ protected:
 	void Pitch(float InputValue);
 
 #pragma endregion
+
+	float MagnitudeOfVector3d(FVector3d vector);
+	float GetDistanceBetweenTwoActors(AActor* actor1, AActor* actor2);
 };
