@@ -164,6 +164,7 @@ void APlayerCharacter::Jump()
 {
 	printf("Jumping");
 
+	// Built in function for jumping
 	ACharacter::Jump();
 }
 

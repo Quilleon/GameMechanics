@@ -53,6 +53,7 @@ void ADoor::Tick(float DeltaTime)
 		//if (doorActivated)openingTimer = 0;
 
 		openingTimer += (float)(FApp::GetDeltaTime() * (opening ? 1 : -1));
+		openingTimer = FMath::Clamp(openingTimer, 0, openingTime);
 
 		FString debug = FString::SanitizeFloat((double)openingTimer);
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, debug);
@@ -71,9 +72,11 @@ void ADoor::Tick(float DeltaTime)
 		//AnimationCore::QuatFromEuler()FQuat::Euler(0, 0, 0);
 		//FRotator newRotation = FQuat::Slerp(rot1, rot1, openingTimer / openingTime);
 
-		float alpha = FMath::Clamp(openingTimer / openingTime, 0, 1);
+		float alpha = openingTimer / openingTime;
 		FRotator newRotation = FMath::Lerp(closedAngle, openAngle, alpha);
-		// TODO: Can set angular velocity to enable good looking phsycis collisions
+		
+		// TODO: Can set angular velocity to enable proper phsycis collisions
+		// Or I can just detect objects that stop the door from moving when hit, to remove all glitchy movement
 		DoorPivot->SetRelativeRotation(newRotation); 
 	}
 	
