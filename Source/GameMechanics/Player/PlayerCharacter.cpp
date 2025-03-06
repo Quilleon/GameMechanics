@@ -7,7 +7,7 @@
 
 // Need the more specified location
 #include "InteractInterface.h"
-#include "ViewportInteractableInterface.h"
+//#include "ViewportInteractableInterface.h"
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInput\Public\InputMappingContext.h"
 #include "EnhancedInput\Public\EnhancedInputSubsystems.h"
